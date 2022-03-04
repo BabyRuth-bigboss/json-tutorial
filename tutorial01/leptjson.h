@@ -1,7 +1,16 @@
+/*
+ * @Description: 
+ * @Date: 2022-03-03 13:52:32
+ * @LastEditTime: 2022-03-04 19:09:57
+ * @FilePath: /json-tutorial/tutorial01/leptjson.h
+ */
 #ifndef LEPTJSON_H__
 #define LEPTJSON_H__
 
-typedef enum { LEPT_NULL, LEPT_FALSE, LEPT_TRUE, LEPT_NUMBER, LEPT_STRING, LEPT_ARRAY, LEPT_OBJECT } lept_type;
+typedef enum { 
+    LEPT_NULL, LEPT_FALSE, LEPT_TRUE, 
+    LEPT_NUMBER, LEPT_STRING, LEPT_ARRAY, LEPT_OBJECT 
+} lept_type;
 
 typedef struct {
     lept_type type;

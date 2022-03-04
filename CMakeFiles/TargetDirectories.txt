@@ -1,0 +1,4 @@
+/home/babyruth/json-tutorial/CMakeFiles/rebuild_cache.dir
+/home/babyruth/json-tutorial/CMakeFiles/edit_cache.dir
+/home/babyruth/json-tutorial/CMakeFiles/leptjson_test.dir
+/home/babyruth/json-tutorial/CMakeFiles/leptjson.dir
