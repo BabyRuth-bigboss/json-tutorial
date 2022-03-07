@@ -1,6 +1,17 @@
+/*
+ * @Description: 
+ * @Date: 2022-03-03 13:52:32
+ * @LastEditTime: 2022-03-07 12:27:04
+ * @FilePath: /json-tutorial/tutorial02/leptjson.c
+ */
 #include "leptjson.h"
 #include <assert.h>  /* assert() */
 #include <stdlib.h>  /* NULL, strtod() */
+#include <errno.h>
+#include <stdio.h>
+
+#define ISDIGIT(ch)         ((ch) >= '0' && (ch) <= '9')
+#define ISDIGIT1TO9(ch)     ((ch) >= '1' && (ch) <= '9')
 
 #define EXPECT(c, ch)       do { assert(*c->json == (ch)); c->json++; } while(0)
 
@@ -15,6 +26,7 @@ static void lept_parse_whitespace(lept_context* c) {
     c->json = p;
 }
 
+#if 0
 static int lept_parse_true(lept_context* c, lept_value* v) {
     EXPECT(c, 't');
     if (c->json[0] != 'r' || c->json[1] != 'u' || c->json[2] != 'e')
@@ -41,23 +53,73 @@ static int lept_parse_null(lept_context* c, lept_value* v) {
     v->type = LEPT_NULL;
     return LEPT_PARSE_OK;
 }
+#endif
 
 static int lept_parse_number(lept_context* c, lept_value* v) {
     char* end;
-    /* \TODO validate number */
+    /* \TODO invalidate number */
+    char firstWord = *c->json;
+    if (!ISDIGIT(firstWord) && firstWord != '-') 
+        return LEPT_PARSE_INVALID_VALUE;
+    /*
+    printf("%s\n", c->json);
+    printf("%c\n", c->json[strlen(c->json) - 1]);
+    */
+    if (c->json[strlen(c->json) - 1] == '.')
+        return LEPT_PARSE_INVALID_VALUE;
+
+    if (firstWord == '0' && strlen(c->json) > 1) {
+        if ((c->json[1] != '.' && c->json[1] != 'E' && c->json[1] != 'e')) {
+            return LEPT_PARSE_ROOT_NOT_SINGULAR;
+        }
+    }
+
     v->n = strtod(c->json, &end);
+    if (errno == ERANGE) {
+        errno = 0;
+        return LEPT_PARSE_NUMBER_TOO_BIG;
+    }
+
     if (c->json == end)
         return LEPT_PARSE_INVALID_VALUE;
     c->json = end;
     v->type = LEPT_NUMBER;
     return LEPT_PARSE_OK;
+    /* \TODO validate number */
 }
+
+static int lept_parse_literal(lept_context* c, lept_value* v, const char* literval, int lept_val) {
+    EXPECT(c, *literval);   
+    if (*literval == 'n') {
+        if (c->json[0] != literval[1] || c->json[1] != literval[2] || c->json[2] != literval[3])
+            return LEPT_PARSE_INVALID_VALUE;
+        c->json += 3;
+    }
+    else if (*literval == 't') {
+        if (c->json[0] != literval[1] || c->json[1] != literval[2])
+            return LEPT_PARSE_INVALID_VALUE;
+        c->json += 3;
+    }
+    else if (*literval == 'f') {
+        if (c->json[0] != literval[1] || c->json[1] != literval[2] || c->json[2] != literval[3])
+            return LEPT_PARSE_INVALID_VALUE;
+        c->json += 4;
+    }
+    v->type = lept_val;
+    return LEPT_PARSE_OK;
+}
+
 
 static int lept_parse_value(lept_context* c, lept_value* v) {
     switch (*c->json) {
+        #if 0
         case 't':  return lept_parse_true(c, v);
         case 'f':  return lept_parse_false(c, v);
-        case 'n':  return lept_parse_null(c, v);
+        case 'n':  return lept_parse_null(c, v);    
+        #endif
+        case 'n':  return lept_parse_literal(c, v, "null", LEPT_NULL);  
+        case 'f':  return lept_parse_literal(c, v, "false", LEPT_FALSE);  
+        case 't':  return lept_parse_literal(c, v, "true", LEPT_TRUE);  
         default:   return lept_parse_number(c, v);
         case '\0': return LEPT_PARSE_EXPECT_VALUE;
     }
@@ -87,5 +149,9 @@ lept_type lept_get_type(const lept_value* v) {
 
 double lept_get_number(const lept_value* v) {
     assert(v != NULL && v->type == LEPT_NUMBER);
+    /*
+    assert(v != NULL);
+    assert(v->type == LEPT_NUMBER);
+    */
     return v->n;
 }
