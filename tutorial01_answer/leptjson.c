@@ -1,3 +1,9 @@
+/*
+ * @Description: 
+ * @Date: 2022-03-03 13:52:32
+ * @LastEditTime: 2022-03-04 20:53:23
+ * @FilePath: /json-tutorial/tutorial01_answer/leptjson.c
+ */
 #include "leptjson.h"
 #include <assert.h>  /* assert() */
 #include <stdlib.h>  /* NULL */
@@ -64,6 +70,7 @@ int lept_parse(lept_value* v, const char* json) {
         if (*c.json != '\0')
             ret = LEPT_PARSE_ROOT_NOT_SINGULAR;
     }
+    
     return ret;
 }
 

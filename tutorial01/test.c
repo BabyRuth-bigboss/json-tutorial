@@ -1,7 +1,7 @@
 /*
  * @Description: 
  * @Date: 2022-03-03 13:52:32
- * @LastEditTime: 2022-03-04 20:59:09
+ * @LastEditTime: 2022-03-04 21:11:35
  * @FilePath: /json-tutorial/tutorial01/test.c
  */
 #include <stdio.h>
@@ -75,6 +75,7 @@ static void test_parse_root_not_singular() {
     lept_value v;
     v.type = LEPT_FALSE;
     EXPECT_EQ_INT(LEPT_PARSE_ROOT_NOT_SINGULAR, lept_parse(&v, "null x"));
+    EXPECT_EQ_INT(LEPT_PARSE_ROOT_NOT_SINGULAR, lept_parse(&v, "null l"));
     EXPECT_EQ_INT(LEPT_NULL, lept_get_type(&v));
 }
 
